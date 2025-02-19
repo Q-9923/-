@@ -1,0 +1,54 @@
+​因为图片无法展示可以参考csdn文章:https://blog.csdn.net/Q1684964515?spm=1001.2100.3001.5343
+1.打开ollma官网：
+奥拉马 (ollama.com)
+https://ollama.com/
+2.然后下载Windows为例：
+
+​​
+
+3.ollma服务器在国外下载会很慢，耗时比较长，可以挂着就行了
+
+4.下好之后回到ollma官网点击模型modles
+
+
+
+5.选择deepseekr1
+
+
+
+个人使用通常选8b一下就好了，数值越大模型效果越强
+
+
+
+6.之后复制旁边的指令
+
+
+
+7.按win+r输入cmd打开黑窗口按右键后回车会自动进行下载，耐心等待下好后可以直接对话了。
+
+
+
+8.接下来进行实现图形化操作（如果不需要就在用win+r打开的黑窗口使用，直接看结尾会附上教程）：
+
+搜索下载chatbox：Install Windows(PC) | Chatbox (chatboxai.app)
+
+9.进入设置模型提供选择ollama api
+
+
+
+保存好后就可以直接对话啦。
+
+10.如果不使用chatbox图形化界面的话，重新打开黑窗口命令提示符还不能直接输入因为并没有启用ollama
+
+所以先确保ollama启用有这个图标
+
+
+
+11.然后再命令提示符中输入哦llama list可以查看已经安装的模型
+
+12.输入 ollama run deepseek-r1（如果有误的话在这行代码末尾加上     :你对应的模型，代码注意冒号ollama run deepseek-r1:7b      7b为你下好的对应的模型版本，可通过ollama list查看）
+
+
+
+
+​
