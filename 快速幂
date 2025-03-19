@@ -1,0 +1,25 @@
+using ll = long long;
+ll fastpower(ll a, ll n)
+{
+	if (n == 0) return 1;
+	ll half = fastpower(a, n / 2);
+	if (n & 1)//判断是否为奇数
+	{
+		return half * half * a;
+	}
+	else
+	{
+		return half * half;
+	}
+}
+
+int main()
+{
+
+
+	int a, n;
+	cin >> a >> n;
+	cout << fastpower(a, n) << endl;
+	return 0;
+
+}
