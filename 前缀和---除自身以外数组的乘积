@@ -53,7 +53,7 @@ public:
 vector三个数组，一个是answer，一个是前缀乘积l，一个是后缀乘积r，将每个元素的前缀后缀的乘积都算出来后，在遍历一遍把前后缀乘积放入answer中就好了
 1.优化：已经遍历数组了，那就直接算出前缀的乘积，然后再遍历一遍定义一个r，直接与answer数组相乘就好了
 
-第二种双指针：
+第二种双指针：但是耗时间较长
 class Solution {
 public:
     vector<int> productExceptSelf(vector<int>& nums) {
