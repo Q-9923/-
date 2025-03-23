@@ -1,0 +1,74 @@
+bound - sums.begin() 计算的是 bound 所指向元素在 sums 数组中的位置索引。因为在 C++ 里，对于同一个容器的两个迭代器相减，结果是它们之间的元素个数，所以这个操作得到的是一个整数，表示 bound 所指元素相对于数组起始位置的偏移量。
+
+给你一个整数数组 nums，返回 数组 answer ，其中 answer[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积 。
+
+题目数据 保证 数组 nums之中任意元素的全部前缀元素和后缀的乘积都在  32 位 整数范围内。
+
+请 不要使用除法，且在 O(n) 时间复杂度内完成此题。
+
+ 
+
+示例 1:
+
+输入: nums = [1,2,3,4]
+输出: [24,12,8,6]
+示例 2:
+
+输入: nums = [-1,1,0,-3,3]
+输出: [0,0,9,0,0]
+ 
+
+提示：
+
+2 <= nums.length <= 105
+-30 <= nums[i] <= 30
+输入 保证 数组 answer[i] 在  32 位 整数范围内
+ 
+
+进阶：在 O(1) 的额外空间复杂度内完成这个题目
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+       
+        int length=nums.size();
+        vector<int>answre(length);
+        answre[0]=1;
+
+        for(int i=1;i<length;i++)
+        {
+            answre[i]=nums[i-1]*answre[i-1];
+        }
+        int r=1;
+        for(int i=length-1;i>=0;i--)
+        {
+            answre[i]=answre[i]*r;
+            r*=nums[i];
+        }
+        
+        return answre;
+    }
+};
+
+第一种简单方法：
+vector三个数组，一个是answer，一个是前缀乘积l，一个是后缀乘积r，将每个元素的前缀后缀的乘积都算出来后，在遍历一遍把前后缀乘积放入answer中就好了
+1.优化：已经遍历数组了，那就直接算出前缀的乘积，然后再遍历一遍定义一个r，直接与answer数组相乘就好了
+
+第二种双指针：
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+       
+        
+        vector<int>answre(nums.size(),1);
+        int left=0;int right=nums.size()-1;
+        int l=1,r=1;
+        while(right>=0&&left<nums.size())//这里的条件为什么不能用right>left   这样会访问中断，俩侧的元素没有累计乘到数组中
+        {
+            answre[left]*=l;
+            l*=nums[left++];
+            answre[right]*=r;
+            r*=nums[right--];
+        }
+        return answre;
+    }
+};
