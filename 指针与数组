@@ -1,0 +1,66 @@
+#include<stdio.h>
+int main(int argc,char*argv[])
+{
+	short gird[3][3] = { {10,20,30},{40,50,60},{70,80,90} };
+	char* pc = (char*)gird + 3 * sizeof(short);
+	short (*ptr1)[2] = (short(*)[2])gird[1];
+	short* ptr2 = (short*)(gird + 1);
+	printf(" %d\n",*(short*)(pc-sizeof(short)*2));
+	printf(" %d\n", *ptr2+1);
+	printf(" %d\n", *(ptr2+1));
+	printf(" %d\n", **(gird+2));
+	printf(" %d\n", **(ptr1+2));
+	printf(" %d\n", *(*ptr1+2));
+	printf(" %d\n", (*(gird + 1))[-1]);
+	printf(" %d\n", *(short*)(pc - sizeof(char) * 2));
+
+}
+
+20
+41
+50
+70
+80
+60
+30
+30
+
+1. 解引用前的 ptr1
+类型：short (*)[2]，这是一种指向包含 2 个 short 类型元素的数组的指针。
+指向：ptr1 通过 (short(*)[2])gird[1] 进行初始化，gird[1] 是二维数组 gird 第二行的首地址（即 &gird[1][0]），经过强制类型转换后，ptr1 指向从 gird[1][0] 开始的一个包含 2 个 short 元素的数组。从逻辑上看，它指向的数组是 {gird[1][0], gird[1][1]}。
+代表含义：ptr1 代表的是这个包含 2 个 short 元素的数组的起始地址，它可以用来定位和操作这个特定的小数组。
+2. 第一次解引用 *ptr1
+类型转换：对 ptr1 进行第一次解引用操作 *ptr1 后，类型从 short (*)[2] 转换为 short *。这是因为 *ptr1 得到的是 ptr1 所指向的数组本身，而在 C 语言中，数组名在大多数表达式中会被隐式转换为指向其首元素的指针。
+指向：*ptr1 指向的是 ptr1 所指向数组的第一个元素 gird[1][0] 的地址。
+代表含义：*ptr1 代表的是一个指向 short 类型元素的指针，该元素是 ptr1 所指向数组的首元素，可用于访问该数组中的元素。
+3. 第二次解引用 *(*ptr1)
+类型：short，即 short 类型的具体数值。
+指向：由于 *ptr1 指向 gird[1][0] 的地址，对 *ptr1 进行第二次解引用 *(*ptr1) 后，得到的是 gird[1][0] 这个元素的值。
+代表含义：*(*ptr1) 代表的是 ptr1 所指向数组的第一个元素的具体值，在这个例子中就是 40。
+
+
+printf(" %d\n",*(short*)(pc-sizeof(short)*2));
+pc - sizeof(short)*2 使 pc 指针向前偏移 2 个 short 类型的字节数，指向 gird[0][1]。
+(short*) 将其转换为 short* 类型，然后解引用得到 gird[0][1] 的值，即 20。
+printf(" %d\n", *ptr2+1);
+*ptr2 得到 gird[1][0] 的值，即 40。
+*ptr2 + 1 就是 40 + 1 = 41。
+printf(" %d\n", *(ptr2+1));
+ptr2 + 1 让 ptr2 指针向后偏移 1 个 short 类型的字节数，指向 gird[1][1]。
+解引用得到 gird[1][1] 的值，即 50。
+printf(" %d\n", **(gird+2));
+gird + 2 指向 gird 数组的第三行。
+*(gird + 2) 得到第三行的首地址，再解引用 **(gird + 2) 得到 gird[2][0] 的值，即 70。
+printf(" %d\n", **(ptr1+2));
+在 C 语言中，当对指针进行加减运算时，指针移动的字节数取决于指针所指向的数据类型的大小。对于一个指针 p 和整数 n，p + n 表示指针 p 向前移动 n 个其所指向的数据类型的大小。
+对于 ptr1 这种 short (*)[2] 类型的指针，其所指向的数据类型是包含 2 个 short 元素的数组。假设 sizeof(short) 为 2 字节，那么一个包含 2 个 short 元素的数组的大小就是 2 * sizeof(short) = 4 字节。
+3. ptr1 + 2 的移动情况
+当执行 ptr1 + 2 时，指针 ptr1 会向前移动 2 个其所指向的数据类型（即包含 2 个 short 元素的数组）的大小。由于每个这样的数组大小是 4 字节，所以 ptr1 总共会向前移动 2 * 4 = 8 字节。
+printf(" %d\n", *(*ptr1+2));
+*ptr1 得到 gird[1] 开始的数组，*ptr1 + 2 让指针向后偏移 2 个 short 类型的字节数，指向 gird[1][2]。
+解引用得到 gird[1][2] 的值，即 60。
+printf(" %d\n", (*(gird + 1))[-1]);
+*(gird + 1) 得到 gird 数组第二行的首地址，(*(gird + 1))[-1] 相当于 gird[1][0] 向前偏移 1 个 short 类型的字节数，即 gird[0][2]，其值为 30。
+printf(" %d\n", *(short*)(pc - sizeof(char) * 2));
+pc - sizeof(char) * 2 让 pc 指针向前偏移 2 个 char 类型的字节数，由于 short 类型通常占 2 个字节，所以这里相当于指向 gird[0][2]。
+(short*) 将其转换为 short* 类型，然后解引用得到 gird[0][2] 的值，即 30。
