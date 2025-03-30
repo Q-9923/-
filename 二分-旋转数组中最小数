@@ -1,0 +1,177 @@
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int l=-1,r=nums.size()-1;
+        while(l+1<r)
+        {
+            int mid=l+(r-l)/2;
+            if(nums[mid]<nums.back())
+            {
+                r=mid;
+            }
+            else
+            {
+                l=mid;
+            }
+        }
+        return nums[r];
+    }
+};
+
+算法原理
+旋转数组特性：
+旋转数组可视为由两个递增子数组拼接而成，例如 [4,5,6,7,0,1,2]。最小值位于第二个子数组的开头。
+二分查找逻辑：
+比较中间元素 nums[mid] 与数组末尾元素 nums.back()：
+若 nums[mid] < nums.back()：最小值在左半部分（包括 mid）。
+若 nums[mid] > nums.back()：最小值在右半部分（不包括 mid）。
+区间设计：
+使用开区间 (left, right) 避免边界条件的复杂处理。初始时 left = -1，right = n-1，确保第一个 mid 始终位于有效范围内。
+为何 left 初始化为 -1
+避免无限循环：
+若 left 初始化为 0，当数组未旋转时，可能导致循环次数增加。例如：
+未旋转数组 [0,1,2,3,4]：
+left=0 需循环 3 次。
+left=-1 仅需循环 2 次。
+快速收敛到最小值：
+当 nums[mid] < nums.back() 时，说明最小值在左半部分，直接缩小右边界。
+初始化为 -1 可确保第一次 mid 位于数组前半部分，加速收敛。
+若 left 初始化为 0 会怎样
+正确性：
+逻辑上仍能正确找到最小值，但可能导致循环次数增加。
+超时原因：
+对于极大数组（如 n=1e5），循环次数增加可能超出时间限制。
+例如，未旋转数组需多执行一次循环：
+c
+left=0 → right=4 → mid=2 → right=2 → mid=1 → right=1 → mid=0 → right=0.
+
+
+
+
+适合使用 left = -1 的情况
+1. 查找旋转数组中的最小值
+在查找旋转数组最小值的问题里，将 left 初始化为 -1 构建开区间 (-1, right) 是可行的，并且有一定优势。像之前提到的代码：
+cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int left = -1, right = nums.size() - 1; 
+        while (left + 1 < right) { 
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums.back()) {
+                right = mid;
+            } else { 
+                left = mid;
+            }
+        }
+        return nums[right];
+    }
+};
+
+使用开区间 (-1, right) 可以避免在处理未旋转数组时的一些边界情况，让代码逻辑更简洁，还能减少不必要的循环次数，避免超时。
+2. 统一处理旋转和未旋转数组
+当需要统一处理旋转和未旋转数组时，left = -1 有助于简化逻辑。因为在这种情况下，使用开区间可以让代码对不同情况的处理更一致，避免为未旋转数组单独设计特殊逻辑。
+不适合使用 left = -1 的情况
+1. 查找特定元素
+如果是在旋转数组中查找某个特定元素，而非最小值，通常不需要将 left 初始化为 -1。因为查找特定元素时，重点在于元素的位置匹配，使用常规的闭区间 [left, right] （left 初始化为 0）能更直观地表达查找范围，代码逻辑也更符合常规的二分查找思路。例如以下查找特定元素的代码：
+cpp
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0, right = nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            // 判断左右哪部分是有序的
+            if (nums[left] <= nums[mid]) {
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+};
+
+///////////////为什么l初始化为-1----------针对考虑为旋转数组//////////////
+
+首先，数组的索引范围是从 0 到 n-1，所以 right 的初始值设为 n-1 是自然的，因为要包含整个数组的有效元素。而 left 设为 - 1 是为了形成一个开区间，这样在处理未旋转的数组时，可以直接让 right 指向 0，而不需要额外的判断。
+接下来，可能需要解释开区间的设计意图。开区间 (-1, n-1) 的好处在于，当数组没有旋转时，整个数组是有序的，最小值在第一个元素。此时，循环会比较 mid 和 nums.back ()，如果 nums [mid] < nums.back ()，说明 mid 在左半部分，可能包含最小值，所以调整 right 到 mid。如果数组没有旋转，那么所有元素都小于等于 nums.back ()，所以 right 会逐渐缩小到 0 的位置，最终返回 nums [right] 即正确。
+如果 right 初始化为 n，那么数组的有效索引是 0 到 n-1，而 n 本身是不存在的。这会导致在计算 mid 的时候可能出现越界的情况，比如当 left 是 n-2，right 是 n 时，mid 会是 (n-2 + n)/2 = (2n-2)/2 = n-1，这时候 mid 是有效的。但这样设置可能不太直观，而且可能增加边界处理的复杂度。
+另外，使用 right = n-1 可以确保所有的 mid 计算都在有效索引范围内，避免出现无效的索引。而 left=-1 作为左边界，虽然本身无效，但在循环条件中，left+1 < right 会保证在循环过程中 mid 始终在有效范围内。
+还需要考虑代码的简洁性和避免特殊情况处理。例如，当数组未旋转时，right 最终会被调整到 0 的位置，而如果 right 初始化为 n，可能需要额外的条件来处理这种情况，或者在循环结束后进行判断，这会增加代码的复杂度。
+总结起来，right 初始化为 n-1 是因为数组的有效索引范围是 0 到 n-1，而 left=-1 是为了形成一个开区间，使得在处理未旋转数组时不需要特殊处理，直接通过循环调整 right 到正确的位置。这样设计可以简化代码逻辑，避免边界错误，同时确保在所有情况下都能正确找到最小值。
+
+
+////////////////////适合使用 left = -1 的情况////////////
+
+
+
+1. 查找旋转数组中的最小值
+在查找旋转数组最小值的问题里，将 left 初始化为 -1 构建开区间 (-1, right) 是可行的，并且有一定优势。像之前提到的代码：
+cpp
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int left = -1, right = nums.size() - 1; 
+        while (left + 1 < right) { 
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums.back()) {
+                right = mid;
+            } else { 
+                left = mid;
+            }
+        }
+        return nums[right];
+    }
+};
+使用开区间 (-1, right) 可以避免在处理未旋转数组时的一些边界情况，让代码逻辑更简洁，还能减少不必要的循环次数，避免超时。
+2. 统一处理旋转和未旋转数组
+当需要统一处理旋转和未旋转数组时，left = -1 有助于简化逻辑。因为在这种情况下，使用开区间可以让代码对不同情况的处理更一致，避免为未旋转数组单独设计特殊逻辑。
+
+/////////////////////////////不适合使用 left = -1 的情况///////////////////////
+
+1. 查找特定元素
+如果是在旋转数组中查找某个特定元素，而非最小值，通常不需要将 left 初始化为 -1。因为查找特定元素时，重点在于元素的位置匹配，使用常规的闭区间 [left, right] （left 初始化为 0）能更直观地表达查找范围，代码逻辑也更符合常规的二分查找思路。例如以下查找特定元素的代码：
+cpp
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0, right = nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] == target) {
+                return mid;
+            }
+            // 判断左右哪部分是有序的
+            if (nums[left] <= nums[mid]) {
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1;
+                } else {
+                    left = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+};
+这里使用 left = 0 作为起始位置，能清晰地表示从数组的第一个元素开始查找。
+2. 问题对边界处理有特殊要求
+如果问题本身对边界处理有特殊要求，例如需要考虑数组的第一个元素或者需要根据边界元素进行特殊判断，那么将 left 初始化为 -1 可能会使边界处理变得复杂，甚至导致错误。此时，使用常规的 left = 0 能更好地满足需求。
+综上所述，是否将 left 初始化为 -1 要根据具体的旋转数组问题来决定，需要综合考虑问题的特点、代码的简洁性和正确性等因素。
