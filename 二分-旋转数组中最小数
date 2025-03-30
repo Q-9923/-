@@ -5,7 +5,7 @@ public:
         while(l+1<r)
         {
             int mid=l+(r-l)/2;
-            if(nums[mid]<nums.back())
+            if(nums[mid]<nums.back())//如果数组中有重复元素那就上一行加一条if判断语句如果中点值等于末尾，r就--（if(nums[mid]==nums[r]) r--）
             {
                 r=mid;
             }
