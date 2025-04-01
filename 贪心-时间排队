@@ -1,0 +1,90 @@
+有 
+�
+n 个人在一个水龙头前排队接水，假如每个人接水的时间为 
+�
+�
+T 
+i
+​
+ ，请编程找出这 
+�
+n 个人排队的一种顺序，使得 
+�
+n 个人的平均等待时间最小。
+
+Input
+第一行为一个整数 
+�
+n。
+
+第二行 
+�
+n 个整数，第 
+�
+i 个整数 
+�
+�
+T 
+i
+​
+  表示第 
+�
+i 个人的接水时间 
+�
+�
+T 
+i
+​
+ 。
+
+Output
+输出文件有两行，第一行为一种平均时间最短的排队顺序；第二行为这种排列方案下的平均等待时间（输出结果精确到小数点后两位）。
+
+Sample 1
+Inputcopy	Outputcopy
+10 
+56 12 1 99 1000 234 33 55 99 812
+3 2 7 8 1 4 9 6 10 5
+291.90
+struct person
+{
+	int time;
+	int number;
+};
+
+bool compare(const person&a,const person&b)
+{
+	if(a.time==b.time)
+	{
+		return a.number<b.number;
+	}
+	return a.time<b.time;
+}
+int main()
+{
+	int n;cin>>n;
+	vector<person>arr(n);
+	double sum=0,curtime=0;
+	for(int i=0;i<n;i++)
+	{
+		cin>>arr[i].time;
+		
+		arr[i].number=1+i;
+		
+	}
+	sort(arr.begin(),arr.end(),compare);
+	for(int i=0;i<n;i++)
+	{
+		curtime+=arr[i].time;//累加每个人等待时间 
+		sum+=curtime;//所有人的等待时间  一定要加上前一个人已经等待的时间，所以要curtime累加一次 其最终结果是等待最后一个人接完水的总等待时间 
+	}
+	for(int i=0;i<n;i++)
+	{
+		cout<<arr[i].number<<' ';
+	}
+	
+	cout<<fixed<<setprecision(2)<<(sum-curtime)/n<<endl;//计算平均每个人的等待时间，一定记住是不包括当前人的需要接水时间，而是从第一个到他的前一个，也就是所有人的等待时间 ，因为现在到了最后一个，他不用等待
+	//所以要把总时间sum减去最后一人所需时间然后做平均 
+	// 
+	return 0;
+}
